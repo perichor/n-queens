@@ -127,25 +127,23 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
+      var length = this.get('n') - 1;
       var i = 0; 
       var j = 0;
+      var diagonal = [];
+      var context = this;
 
       if (majorDiagonalColumnIndexAtFirstRow < 0) {
         j = Math.abs(majorDiagonalColumnIndexAtFirstRow);
       } else {
         i = Math.abs(majorDiagonalColumnIndexAtFirstRow);
       } 
-      var diagonal = [];
-      var context = this;
-      var length = this.get('n') - 1;
 
       var recurse = function(i, j) {
         diagonal.push(context.rows()[i][j]);
         if (!(i >= length || j >= length)) {
           recurse(i + 1, j + 1);
         }
-
-
       };
       
       recurse(i, j);
@@ -177,9 +175,26 @@
       var length = this.get('n') - 1;
       var i = 0;
       var j = length;
+      var diagonal = [];
+      var context = this;
 
+      if (minorDiagonalColumnIndexAtFirstRow <= length) {
+        j = minorDiagonalColumnIndexAtFirstRow; 
+      } else {
+        i = minorDiagonalColumnIndexAtFirstRow - length;
+      }
 
+      var recurse = function(i, j) {
+        diagonal.push(context.rows()[i][j]);
+        if (i < length && j > 0) {
+          recurse(i + 1, j - 1);
+        }
+      };
+      recurse(i, j);
 
+      return _.reduce(diagonal, function(acc, item) {
+        return acc + item;
+      }, 0) > 1;
     },
 
     // test if any minor diagonals on this board contain conflicts
